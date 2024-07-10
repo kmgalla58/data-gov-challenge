@@ -7,20 +7,69 @@ import {
   Typography, 
   Box, 
   Button,
-  Select,
   FormControl,
-  InputLabel,
-  MenuItem,
+  styled,
   TableBody,
   Table,
   TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TablePagination,
   TableRow
 } from '@mui/material';
+import Select from "react-select";
 import {abs} from 'mathjs';
 import employeeInfo from './static/employee-info.json';
+
+const theme = extendTheme({
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: '#2b2d42'
+        },
+        secondary: {
+          main: '#d90429'
+        },
+        background: {
+          main: '#edf2f4'
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: '#edf2f4'
+        },
+        secondary: {
+          main: '#d90429'
+        },
+        background: {
+          main: '#2b2d42'
+        },
+      },
+    },
+  },
+});
+
+const StyledColumnTableCell = styled(TableCell)({ 
+  color: theme.vars.palette.background.main,
+  backgroundColor: theme.vars.palette.primary.main
+});
+
+const StyledTableCell = styled(TableCell)({ 
+  color: theme.vars.palette.primary.main,
+  backgroundColor: theme.vars.palette.background.main,
+  borderColor: theme.vars.palette.secondary.main
+});
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  [`&.$(tableCellClasses.root)`]: {
+    backgroundColor: theme.vars.palette.background.main,
+    color: theme.vars.palette.primary.main
+  },
+}))
 
 function App() {
   const [month, setMonth] = useState(0);
@@ -28,40 +77,14 @@ function App() {
   const [page, setPage] = useState(0);
   const [pagination, setPagination] = useState(10);
 
-  const theme = extendTheme({
-    colorSchemes: {
-      light: {
-        palette: {
-          primary: {
-            main: '#2b2d42'
-          },
-          secondary: {
-            main: '#d90429'
-          },
-          background: {
-            main: '#edf2f4'
-          },
-        },
-      },
-      dark: {
-        palette: {
-          primary: {
-            main: '#edf2f4'
-          },
-          secondary: {
-            main: '#d90429'
-          },
-          background: {
-            main: '#2b2d42'
-          },
-        },
-      },
-    },
-  });
-
   const calcAge = (birthday) => {
     let diff = Date.now() - birthday.getTime();
     return abs(new Date(diff).getUTCFullYear() - 1970);
+  }
+
+  const getCurrMonth = () => {
+    let d = new Date();
+    return months[d.getMonth()];
   }
 
   useEffect(() => {
@@ -78,6 +101,7 @@ function App() {
       age: calcAge(new Date(employee['Birthday']))
     }))
     setRows(r);
+    setMonth(getCurrMonth());
   }, []);
 
   const columns = [
@@ -92,7 +116,21 @@ function App() {
     { id: 'age', label: 'Age', minWidth: '75px'}
   ]
 
-  const filterList = (e) => { setMonth(e.target.value); }
+  const months = [
+    {value: 1, label: "January"},
+    {value: 2, label: "February"},
+    {value: 3, label: "March"},
+    {value: 4, label: "April"},
+    {value: 5, label: "May"},
+    {value: 6, label: "June"},
+    {value: 7, label: "July"},
+    {value: 8, label: "August"},
+    {value: 9, label: "September"},
+    {value: 10, label: "October"},
+    {value: 11, label: "November"},
+    {value: 12, label: "December"},
+    {value: "All", label: "All"}
+  ]
 
   const handleChangePage = (e, newPage) => { setPage(newPage); }
 
@@ -114,40 +152,27 @@ function App() {
           <Box sx={{marginLeft: '50%'}}>
             <Button variant="outlined" sx={{marginTop: '15px'}}>Apply Filter</Button>
             <FormControl sx={{m: 1, minWidth: 120}}>
-              <InputLabel id="month-filter-label">Birth Month</InputLabel>
               <Select
                 labelId="month-filter-label"
                 id="month-filter"
-                value={month}
-                onChange={filterList}
+                onChange={e => setMonth(e.value)}
                 autoWidth
                 label="Month"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="1">January</MenuItem>
-                <MenuItem value="2">February</MenuItem>
-                <MenuItem value="3">March</MenuItem>
-                <MenuItem value="4">April</MenuItem>
-                <MenuItem value="5">May</MenuItem>
-                <MenuItem value="6">June</MenuItem>
-                <MenuItem value="7">July</MenuItem>
-                <MenuItem value="8">August</MenuItem>
-                <MenuItem value="9">September</MenuItem>
-                <MenuItem value="10">October</MenuItem>
-                <MenuItem value="11">November</MenuItem>
-                <MenuItem value="12">December</MenuItem>
-              </Select>
+                options={months}
+                value={months.value}
+                defaultValue={getCurrMonth}
+              />
             </FormControl>
           </Box>
         </Box>
-        <TableContainer sx={{width: '100%', overflow: 'hidden'}}>
-          <Table stickyHeader>
+        <TableContainer sx={{width: '100%', overflow: 'hidden', marginTop: '30px'}}>
+          <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{backgroundColor: theme.vars.palette.background.main}}>
                 {columns.map((column) => (
-                  <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
+                  <StyledColumnTableCell key={column.id} style={{ minWidth: column.minWidth }}>
                     {column.label}
-                  </TableCell>
+                  </StyledColumnTableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -157,11 +182,11 @@ function App() {
                 .map((row, i) => {
                   return (
                     <TableRow key={i}>
-                      <TableCell component="th" scope="row">{row.first_name}</TableCell>
-                      <TableCell align='center'>{row.last_name}</TableCell>
-                      <TableCell align='center'>{row.location}</TableCell>
-                      <TableCell align='center'>{row.birthday}</TableCell>
-                      <TableCell align='center'>{row.age}</TableCell>
+                      <StyledTableCell component="th" scope="row">{row.first_name}</StyledTableCell>
+                      <StyledTableCell>{row.last_name}</StyledTableCell>
+                      <StyledTableCell>{row.location}</StyledTableCell>
+                      <StyledTableCell>{row.birthday}</StyledTableCell>
+                      <StyledTableCell>{row.age}</StyledTableCell>
                     </TableRow>
                   )
                 })
