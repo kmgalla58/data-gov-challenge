@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { 
   Experimental_CssVarsProvider as CssVarsProvider,
   experimental_extendTheme as extendTheme,
@@ -17,8 +17,10 @@ import {
   TableRow,
   Radio,
   RadioGroup,
-  FormControlLabel
+  FormControlLabel,
+  TableSortLabel
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import Select from "react-select";
 import {abs, round} from 'mathjs';
 import Toggle from './components/toggle';
@@ -60,7 +62,7 @@ const StyledColumnTableCell = styled(TableCell)({
   color: theme.vars.palette.background.main,
   backgroundColor: theme.vars.palette.primary.main,
   fontSize: 'Large',
-  fontWeight: 'bold'
+  fontWeight: 'bold',
 });
 
 const StyledTableCell = styled(TableCell)({ 
@@ -74,6 +76,8 @@ function App() {
   const [page, setPage] = useState(0);
   const [pagination, setPagination] = useState(10);
   const [ageDisplay, setAgeDisplay] = useState('Years');
+  const [orderBy, setOrderBy] = useState('last_name');
+  const [order, setOrder] = useState('asc');
 
   const months = [
     {value: 0, label: "January"},
@@ -110,13 +114,52 @@ function App() {
     }
   }
 
+  let firstRender = useRef(true);
   useEffect(() => { //on page load
-    filterResults();
+    if(firstRender.current){
+      filterResults();
+      let r = sortRows(rows);
+      setRows(r);
+      firstRender.current = false;
+    }
   }, []);
+
+  useEffect(() => {
+    if(!firstRender.current) {
+      let r = sortRows(rows);
+      setRows(r);
+    }
+  }, [order, orderBy])
 
   useEffect(() => {
     filterResults();
   }, [ageDisplay])
+
+  const sortRows = (rowList) => {
+    let r = rowList.slice().sort((objA, objB) => {
+      let a = objA[orderBy];
+      let b = objB[orderBy];
+      if(orderBy === 'birthday') {
+        a = new Date(a).getTime();
+        b = new Date(b).getTime();
+      }
+
+      if(a > b) {
+        return order === 'desc' ? -1 : 1;
+      } else if(a < b) {
+        return order === 'desc' ? 1 : -1;
+      } else {
+        return 0;
+      }
+    });
+    return r;
+  }
+
+  const sortTable = (property) => (event) => {
+    const type = orderBy === property && order === 'asc';
+    setOrder(type ? 'desc' : 'asc');
+    setOrderBy(property);
+  }
 
   const columns = [
     { id: 'first_name', label: "First Name", minWidth: '170px'},
@@ -156,7 +199,8 @@ function App() {
         }),
         age: calcAge(new Date(employee['Birthday']))
       }))
-      setRows(r);
+      let sorted = sortRows(r);
+      setRows(sorted);
       return;
     }
     
@@ -173,7 +217,8 @@ function App() {
       }),
       age: calcAge(new Date(employee['Birthday']))
     }))
-    setRows(r);
+    let sorted = sortRows(r);
+    setRows(sorted);
   }
 
   return (
@@ -242,7 +287,25 @@ function App() {
               <TableRow sx={{backgroundColor: theme.vars.palette.background.main}}>
                 {columns.map((column) => (
                   <StyledColumnTableCell key={column.id} style={{ minWidth: column.minWidth }}>
-                    {column.label}
+                    <TableSortLabel
+                      active={orderBy === column.id}
+                      direction={orderBy === column.id ? order : 'asc'}
+                      onClick={sortTable(column.id)}
+                      sx={{
+                        ':hover': { color: theme.vars.palette.secondary.main },
+                        '&.Mui-active': {
+                          color: theme.vars.palette.background.main,
+                          '& path': { color: theme.vars.palette.background.main }
+                        },
+                      }}
+                    >
+                      {column.label}
+                      {orderBy === column.id ? (
+                        <Box component="span" sx={visuallyHidden}>
+                          {order === 'desc' ? 'sorted decending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </TableSortLabel>
                   </StyledColumnTableCell>
                 ))}
               </TableRow>
