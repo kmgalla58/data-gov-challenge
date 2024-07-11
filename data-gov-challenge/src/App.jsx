@@ -58,14 +58,14 @@ const theme = extendTheme({
   },
 });
 
-const StyledColumnTableCell = styled(TableCell)({ 
+const StyledColumnTableCell = styled(TableCell)({ //styling for column headers
   color: theme.vars.palette.background.main,
   backgroundColor: theme.vars.palette.primary.main,
   fontSize: 'Large',
   fontWeight: 'bold',
 });
 
-const StyledTableCell = styled(TableCell)({ 
+const StyledTableCell = styled(TableCell)({ //styling for table cells
   color: theme.vars.palette.primary.main,
   backgroundColor: theme.vars.palette.background.main,
   borderColor: theme.vars.palette.secondary.main
@@ -95,14 +95,14 @@ function App() {
     {value: "All", label: "All"}
   ]
 
-  const getCurrMonth = () => {
+  const getCurrMonth = () => { //gets the current month
     let d = new Date();
     return months[d.getMonth()];
   }
 
   const [month, setMonth] = useState(getCurrMonth().value);
 
-  const calcAge = (birthday) => {
+  const calcAge = (birthday) => { // calculates age based on option selected
     console.log(ageDisplay);
     let diff = Date.now() - birthday.getTime();
     if(ageDisplay === 'Years') { //age in years
@@ -124,22 +124,22 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { //when sorting
     if(!firstRender.current) {
       let r = sortRows(rows);
       setRows(r);
     }
   }, [order, orderBy])
 
-  useEffect(() => {
+  useEffect(() => { //used to update the list to display the new age values
     filterResults();
   }, [ageDisplay])
 
-  const sortRows = (rowList) => {
+  const sortRows = (rowList) => { //sorts the rows in ascending or decending order by the column selected
     let r = rowList.slice().sort((objA, objB) => {
       let a = objA[orderBy];
       let b = objB[orderBy];
-      if(orderBy === 'birthday') {
+      if(orderBy === 'birthday') { //fixed issue of birthday value being a string
         a = new Date(a).getTime();
         b = new Date(b).getTime();
       }
@@ -155,7 +155,7 @@ function App() {
     return r;
   }
 
-  const sortTable = (property) => (event) => {
+  const sortTable = (property) => (event) => { //updateds where the table should sort by asc or desc
     const type = orderBy === property && order === 'asc';
     setOrder(type ? 'desc' : 'asc');
     setOrderBy(property);
@@ -176,6 +176,7 @@ function App() {
   const handleChangePage = (e, newPage) => { setPage(newPage); }
 
   const changePagination = (e) => {
+    //+ ensures the value is a number
     setPagination(+e.target.value);
     setPage(0);
   }
@@ -184,9 +185,9 @@ function App() {
     setAgeDisplay(e.target.value);
   }
 
-  const filterResults = () => {
+  const filterResults = () => { //filter the table by the month selected
     let r;
-    if(month === "All") {
+    if(month === "All") { //if all, show the full list
       r = employeeInfo.map((employee, i) => ({
         id: i,
         first_name: employee['First name'],
