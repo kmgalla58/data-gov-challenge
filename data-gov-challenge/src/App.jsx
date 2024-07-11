@@ -33,7 +33,7 @@ const theme = extendTheme({
           main: '#2b2d42'
         },
         secondary: {
-          main: '#d90429'
+          main: '#e60014'
         },
         background: {
           main: '#edf2f4'
@@ -46,7 +46,7 @@ const theme = extendTheme({
           main: '#edf2f4'
         },
         secondary: {
-          main: '#d90429'
+          main: '#e60014'
         },
         background: {
           main: '#2b2d42'
@@ -215,8 +215,22 @@ function App() {
                     ...baseStyles,
                     backgroundColor: theme.vars.palette.secondary.main,
                     color: theme.vars.palette.primary.main,
+                    borderColor: theme.vars.palette.primary.main,
+                    ':hover': {
+                      borderColor: theme.vars.palette.primary.main,
+                    }
+
+                  }),
+                  option: (base, { isFocused }) => ({
+                    ...base,
+                    backgroundColor: isFocused ? theme.vars.palette.background.main : theme.vars.palette.secondary.main,
+                    color: theme.vars.palette.primary.main,
                     borderColor: theme.vars.palette.primary.main
                   }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: theme.vars.palette.primary.main,
+                  })
                 }}
               />
             </FormControl>
