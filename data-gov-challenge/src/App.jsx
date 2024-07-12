@@ -224,11 +224,12 @@ function App() {
   return (
     <CssVarsProvider theme={theme}>
       <Box sx={{display: 'block', backgroundColor: theme.vars.palette.background.main}}>
-        <Box sx={{width: '100%', height: '75px', display: 'flex', backgroundColor: theme.vars.palette.secondary.main}}>
+        <Box sx={{width: '100%', height: 'auto', display: 'flex', backgroundColor: theme.vars.palette.secondary.main}}>
           <Typography sx={{
             color: theme.vars.palette.primary.main,
             fontSize: 'XX-Large',
             marginLeft: '15px',
+            marginBottom: '10px',
             paddingTop: '10px',
             fontFamily: '"Russo One", sans-serif',
             WebkitTextStroke: `1px ${theme.vars.palette.background.main}`,
@@ -247,7 +248,8 @@ function App() {
               }
               }}>Apply Filter</Button>
             <FormControl sx={{
-              minWidth: 170,
+              minWidth: 140,
+              marginRight: '5px',
               paddingTop: '14px',
               }}>
               <Select
@@ -285,7 +287,7 @@ function App() {
             </FormControl>
           </Box>
         </Box>
-        <TableContainer sx={{width: '100%', overflow: 'hidden', marginTop: '30px'}}>
+        <TableContainer sx={{width: '100%', overflow: 'auto', marginTop: '30px'}}>
           <Table>
             <TableHead>
               <TableRow sx={{backgroundColor: theme.vars.palette.background.main}}>
