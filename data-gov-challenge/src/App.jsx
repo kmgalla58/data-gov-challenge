@@ -35,7 +35,7 @@ const theme = extendTheme({
           main: '#2b2d42'
         },
         secondary: {
-          main: '#e60014'
+          main: '#ce1e1e'
         },
         background: {
           main: '#edf2f4'
@@ -48,7 +48,7 @@ const theme = extendTheme({
           main: '#edf2f4'
         },
         secondary: {
-          main: '#e60014'
+          main: '#ce1e1e'
         },
         background: {
           main: '#2b2d42'
@@ -103,7 +103,6 @@ function App() {
   const [month, setMonth] = useState(getCurrMonth().value);
 
   const calcAge = (birthday) => { // calculates age based on option selected
-    console.log(ageDisplay);
     let diff = Date.now() - birthday.getTime();
     if(ageDisplay === 'Years') { //age in years
       return abs(new Date(diff).getUTCFullYear() - 1970);
@@ -232,7 +231,7 @@ function App() {
             marginLeft: '15px',
             paddingTop: '10px',
             fontFamily: '"Russo One", sans-serif',
-            WebkitTextStroke: `.5px ${theme.vars.palette.background.main}`,
+            WebkitTextStroke: `1px ${theme.vars.palette.background.main}`,
             fontWeight: 400,
             fontStyle: 'normal'
             }}>Employee Information</Typography>
@@ -241,7 +240,11 @@ function App() {
               marginTop: '15px',
               color: theme.vars.palette.primary.main,
               borderColor: theme.vars.palette.primary.main,
-              fontWeight: 'bold'
+              marginRight: '5px',
+              fontWeight: 'bold',
+              ':hover': {
+                backgroundColor: theme.vars.palette.background.main
+              }
               }}>Apply Filter</Button>
             <FormControl sx={{
               minWidth: 170,
